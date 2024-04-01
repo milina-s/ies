@@ -14,7 +14,6 @@ services:
     networks:
       mqtt_network:
 
-
   fake_agent:
     container_name: agent
     build: ../
@@ -27,7 +26,6 @@ services:
       DELAY: 0.1
     networks:
       mqtt_network:
-
 
 networks:
   mqtt_network:
