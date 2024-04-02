@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from redis import Redis
 import paho.mqtt.client as mqtt
 
@@ -47,7 +47,8 @@ async def save_processed_agent_data(processed_agent_data: ProcessedAgentData):
             )
             processed_agent_data_batch.append(processed_agent_data)
         print(processed_agent_data_batch)
-        store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch)
+        if not store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch):
+            raise HTTPException(status_code=404, detail="Error saving processed agent data")
     return {"status": "ok"}
 
 
@@ -81,7 +82,8 @@ def on_message(client, userdata, msg):
                     redis_client.lpop("processed_agent_data")
                 )
                 processed_agent_data_batch.append(processed_agent_data)
-        store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch)
+        if not store_adapter.save_data(processed_agent_data_batch=processed_agent_data_batch):
+            raise Exception("Error saving data to store adapter")
         return {"status": "ok"}
     except Exception as e:
         logging.info(f"Error processing MQTT message: {e}")
