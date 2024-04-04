@@ -11,5 +11,5 @@ class AggregatedData:
     accelerometer: Accelerometer
     gps: Gps
     parking: Parking
-    time: datetime
+    timestamp: datetime
     user_id: int

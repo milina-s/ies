@@ -101,6 +101,16 @@ subscriptions: Dict[int, Set[WebSocket]] = {}
 
 
 # FastAPI WebSocket endpoint
+@app.websocket("/ws/")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    subscriptions.add(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        subscriptions.remove(websocket)
+
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: int):
     await websocket.accept()
